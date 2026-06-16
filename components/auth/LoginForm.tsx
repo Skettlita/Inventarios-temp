@@ -1,3 +1,4 @@
+//LoginForm.tsx
 'use client';
 
 import React, { useState } from 'react';
@@ -18,16 +19,20 @@ export function LoginForm() {
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
-
       if (error) {
         setError(error.message);
-      } else {
-        router.push('/dashboard');
+        return;
       }
+      if (!data.session) {
+        setError('Login failed. No session was created.');
+        return;
+      }
+      router.replace('/dashboard');
+      router.refresh();
     } catch (err) {
       setError('An error occurred. Please try again.');
     } finally {
@@ -51,6 +56,7 @@ export function LoginForm() {
           disabled={loading}
         />
       </div>
+
       <div>
         <label htmlFor="password" className="block text-sm font-medium mb-1 text-gray-700">
           Password
@@ -65,7 +71,9 @@ export function LoginForm() {
           disabled={loading}
         />
       </div>
+
       {error && <div className="text-red-600 text-sm">{error}</div>}
+
       <Button type="submit" disabled={loading} className="w-full">
         {loading ? 'Signing in...' : 'Sign In'}
       </Button>

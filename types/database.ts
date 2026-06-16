@@ -1,7 +1,15 @@
-// Core Schema Types
+// =======================================================
+// CORE TYPES
+// =======================================================
+
 export interface Company {
   id: string;
   name: string;
+  nit?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  address?: string | null;
+  status: 'active' | 'inactive';
   created_at: string;
   updated_at: string;
 }
@@ -10,115 +18,134 @@ export interface Branch {
   id: string;
   company_id: string;
   name: string;
-  location?: string;
+  address?: string | null;
+  city?: string | null;
+  phone?: string | null;
+  status: 'active' | 'inactive';
   created_at: string;
   updated_at: string;
 }
 
 export interface User {
   id: string;
-  company_id: string;
-  branch_id: string;
+  auth_user_id?: string | null;
+  full_name: string;
   email: string;
-  full_name?: string;
+  phone?: string | null;
+  status: 'active' | 'inactive';
   created_at: string;
   updated_at: string;
-}
-
-export interface Role {
-  id: string;
-  name: string;
-  description?: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface UserRole {
-  id: string;
-  user_id: string;
-  role_id: string;
-  created_at: string;
 }
 
 export interface Customer {
   id: string;
   company_id: string;
-  name: string;
-  email?: string;
-  phone?: string;
+  full_name: string;
+  document_number?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  address?: string | null;
+  city?: string | null;
+  notes?: string | null;
+  status: 'active' | 'inactive';
   created_at: string;
   updated_at: string;
 }
 
-export interface AuditLog {
-  id: string;
-  company_id: string;
-  user_id: string;
-  action: string;
-  table_name: string;
-  record_id: string;
-  changes?: Record<string, any>;
-  created_at: string;
-}
+// =======================================================
+// INVENTORY TYPES
+// =======================================================
 
-// Inventory Schema Types
+export type ProductTrackingType = 'none' | 'serial' | 'lot';
+
+export type ProductType =
+  | 'equipment'
+  | 'accessory'
+  | 'consumable'
+  | 'tool'
+  | 'service'
+  | 'kit';
+
+export type EntityStatus = 'active' | 'inactive';
+
 export interface Category {
   id: string;
+  company_id: string;
+  parent_id?: string | null;
   name: string;
-  description?: string;
+  description?: string | null;
+  status: EntityStatus;
   created_at: string;
   updated_at: string;
 }
 
 export interface Brand {
   id: string;
+  company_id: string;
   name: string;
-  description?: string;
+  description?: string | null;
+  status: EntityStatus;
   created_at: string;
   updated_at: string;
 }
 
 export interface Unit {
   id: string;
+  company_id: string;
   name: string;
-  abbreviation: string;
-  created_at: string;
-  updated_at: string;
+  symbol: string;
+  unit_type: 'unit' | 'length' | 'weight' | 'volume' | 'package';
 }
 
 export interface Product {
   id: string;
   company_id: string;
-  branch_id: string;
+
+  category_id?: string | null;
+  brand_id?: string | null;
+  unit_id?: string | null;
+
+  sku?: string | null;
   name: string;
-  sku: string;
-  category_id?: string;
-  brand_id?: string;
-  unit_id?: string;
-  unit_price: number;
-  reorder_level?: number;
-  description?: string;
+  model?: string | null;
+  description?: string | null;
+
+  tracking_type: ProductTrackingType;
+  product_type: ProductType;
+
+  min_stock: number;
+  cost_price: number;
+  sale_price: number;
+
+  status: EntityStatus;
+
   created_at: string;
   updated_at: string;
+
+  // Campos normalizados para mostrar en tablas
+  category?: string;
+  brand?: string;
+  unit?: string;
+
+  // Alias temporal para pantallas generadas por v0
+  unit_price?: number;
 }
 
 export interface ProductSpec {
   id: string;
   product_id: string;
-  spec_name: string;
+  spec_key: string;
   spec_value: string;
-  created_at: string;
-  updated_at: string;
 }
 
 export interface Warehouse {
   id: string;
   company_id: string;
-  branch_id: string;
+  branch_id?: string | null;
   name: string;
-  location?: string;
-  capacity?: number;
-  manager_id?: string;
+  warehouse_type: 'main' | 'branch' | 'technician' | 'vehicle' | 'damaged' | 'virtual';
+  address?: string | null;
+  status: EntityStatus;
   created_at: string;
   updated_at: string;
 }
@@ -126,39 +153,9 @@ export interface Warehouse {
 export interface WarehouseLocation {
   id: string;
   warehouse_id: string;
-  aisle: string;
-  shelf: string;
-  bin: string;
-  max_capacity?: number;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface Stock {
-  id: string;
-  product_id: string;
-  warehouse_id: string;
-  location_id?: string;
-  quantity_on_hand: number;
-  quantity_reserved?: number;
-  last_counted?: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface Asset {
-  id: string;
-  company_id: string;
-  branch_id: string;
-  product_id: string;
-  asset_tag: string;
-  serial_number?: string;
-  status: 'active' | 'inactive' | 'damaged' | 'retired';
-  location?: string;
-  warehouse_id?: string;
-  assigned_to?: string;
-  purchase_date?: string;
-  depreciation_value?: number;
+  name: string;
+  description?: string | null;
+  status: EntityStatus;
   created_at: string;
   updated_at: string;
 }
@@ -167,69 +164,228 @@ export interface Supplier {
   id: string;
   company_id: string;
   name: string;
-  email?: string;
-  phone?: string;
-  address?: string;
+  nit?: string | null;
+  contact_name?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  address?: string | null;
+  status: EntityStatus;
   created_at: string;
   updated_at: string;
 }
 
+export interface Stock {
+  id: string;
+  company_id: string;
+  product_id: string;
+  warehouse_id: string;
+  location_id?: string | null;
+
+  quantity: number;
+  reserved_quantity: number;
+  available_quantity: number;
+
+  updated_at: string;
+
+  // Campos normalizados para mostrar en tablas
+  product_name?: string;
+  product_sku?: string;
+  min_stock?: number;
+  warehouse_name?: string;
+  location_name?: string;
+
+  // Alias temporales para pantallas generadas por v0
+  quantity_on_hand?: number;
+  quantity_reserved?: number;
+}
+
+export type AssetStatus =
+  | 'available'
+  | 'reserved'
+  | 'in_transit'
+  | 'assigned'
+  | 'installed'
+  | 'sold'
+  | 'loaned'
+  | 'maintenance'
+  | 'damaged'
+  | 'returned'
+  | 'lost'
+  | 'retired';
+
+export type OwnershipType =
+  | 'company_owned'
+  | 'customer_owned'
+  | 'rented'
+  | 'loaned'
+  | 'sold';
+
+export interface Asset {
+  id: string;
+  company_id: string;
+  product_id: string;
+  warehouse_id?: string | null;
+  location_id?: string | null;
+
+  serial_number?: string | null;
+  mac_address?: string | null;
+  imei?: string | null;
+  asset_code?: string | null;
+
+  status: AssetStatus;
+  ownership_type: OwnershipType;
+
+  purchase_date?: string | null;
+  cost_price: number;
+  sale_price: number;
+
+  warranty_start?: string | null;
+  warranty_end?: string | null;
+
+  current_customer_id?: string | null;
+  current_branch_id?: string | null;
+
+  notes?: string | null;
+
+  created_at: string;
+  updated_at: string;
+
+  // Campos normalizados para mostrar en tablas
+  product_name?: string;
+  warehouse_name?: string;
+  location_name?: string;
+
+  // Alias temporal para pantallas generadas por v0
+  asset_tag?: string;
+}
+
+export type PurchaseStatus = 'draft' | 'received' | 'partial' | 'cancelled';
+
 export interface Purchase {
   id: string;
   company_id: string;
-  branch_id: string;
-  po_number: string;
-  supplier_id: string;
-  order_date: string;
-  expected_delivery?: string;
-  status: 'draft' | 'pending' | 'received' | 'cancelled';
-  total_amount?: number;
-  created_by: string;
+  branch_id?: string | null;
+  supplier_id?: string | null;
+
+  purchase_number?: string | null;
+  invoice_number?: string | null;
+  purchase_date: string;
+
+  total_amount: number;
+  status: PurchaseStatus;
+
+  notes?: string | null;
+  created_by?: string | null;
+
   created_at: string;
   updated_at: string;
+
+  suppliers?: {
+    name?: string;
+  } | null;
+
+  branches?: {
+    name?: string;
+  } | null;
 }
 
 export interface PurchaseItem {
   id: string;
   purchase_id: string;
   product_id: string;
+  warehouse_id?: string | null;
+  location_id?: string | null;
+
   quantity: number;
-  unit_price: number;
-  received_quantity?: number;
+  unit_cost: number;
+  total_cost: number;
+
+  notes?: string | null;
   created_at: string;
-  updated_at: string;
+
+  products?: {
+    name?: string;
+    sku?: string | null;
+  } | null;
 }
+
+export type MovementType =
+  | 'purchase_in'
+  | 'sale_out'
+  | 'transfer_out'
+  | 'transfer_in'
+  | 'adjustment_in'
+  | 'adjustment_out'
+  | 'reservation'
+  | 'reservation_release'
+  | 'installation_out'
+  | 'technician_out'
+  | 'technician_return'
+  | 'warranty_out'
+  | 'warranty_return'
+  | 'damage'
+  | 'retirement';
+
+export type MovementStatus = 'draft' | 'completed' | 'cancelled';
 
 export interface Movement {
   id: string;
   company_id: string;
-  branch_id: string;
-  movement_type: 'transfer_out' | 'transfer_in' | 'adjustment' | 'sale' | 'return';
-  from_warehouse_id?: string;
-  to_warehouse_id?: string;
-  movement_date: string;
-  status: 'pending' | 'completed' | 'cancelled';
-  created_by: string;
+  branch_id?: string | null;
+
+  movement_type: MovementType;
+
+  reference_type?: string | null;
+  reference_id?: string | null;
+
+  warehouse_from_id?: string | null;
+  warehouse_to_id?: string | null;
+
+  status: MovementStatus;
+
+  reason?: string | null;
+  created_by?: string | null;
   created_at: string;
-  updated_at: string;
+
+  warehouses_from?: {
+    name?: string;
+  } | null;
+
+  warehouses_to?: {
+    name?: string;
+  } | null;
 }
 
 export interface MovementItem {
   id: string;
   movement_id: string;
   product_id: string;
+  asset_id?: string | null;
+
+  warehouse_id?: string | null;
+  location_id?: string | null;
+
   quantity: number;
-  from_location_id?: string;
-  to_location_id?: string;
-  created_at: string;
-  updated_at: string;
+  unit_cost: number;
+
+  stock_before?: number | null;
+  stock_after?: number | null;
+
+  notes?: string | null;
+
+  products?: {
+    name?: string;
+    sku?: string | null;
+  } | null;
 }
 
 export interface Kit {
   id: string;
   company_id: string;
   name: string;
-  description?: string;
+  description?: string | null;
+  sale_price: number;
+  status: EntityStatus;
   created_at: string;
   updated_at: string;
 }
@@ -239,18 +395,27 @@ export interface KitItem {
   kit_id: string;
   product_id: string;
   quantity: number;
-  created_at: string;
-  updated_at: string;
+  required: boolean;
+  notes?: string | null;
 }
 
 export interface Warranty {
   id: string;
-  product_id?: string;
-  asset_id?: string;
-  warranty_type: string;
+  company_id: string;
+  asset_id?: string | null;
+  product_id?: string | null;
+  supplier_id?: string | null;
+  customer_id?: string | null;
+
+  warranty_type: 'supplier' | 'customer' | 'internal';
+
   start_date: string;
   end_date: string;
-  provider?: string;
+
+  status: 'active' | 'expired' | 'claimed' | 'void';
+
+  notes?: string | null;
+
   created_at: string;
   updated_at: string;
 }

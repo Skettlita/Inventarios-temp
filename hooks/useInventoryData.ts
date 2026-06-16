@@ -1,6 +1,6 @@
 'use client';
-
 import { useState, useCallback, useEffect } from 'react';
+import { supabase } from '@/lib/supabase';
 import {
   getProducts,
   getAssets,
@@ -25,7 +25,7 @@ import type {
 } from '@/types/database';
 
 // useProducts Hook
-export function useProducts(branchId: string) {
+export function useProducts(branchId?: string) {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -34,7 +34,7 @@ export function useProducts(branchId: string) {
     setLoading(true);
     setError(null);
     try {
-      const data = await getProducts(branchId);
+      const data = await getProducts();
       setProducts(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch products');
@@ -44,16 +44,14 @@ export function useProducts(branchId: string) {
   }, [branchId]);
 
   useEffect(() => {
-    if (branchId) {
-      fetchProducts();
-    }
-  }, [branchId, fetchProducts]);
+    fetchProducts();
+  }, [fetchProducts]);
 
   return { products, loading, error, refetch: fetchProducts };
 }
 
 // useAssets Hook
-export function useAssets(branchId: string) {
+export function useAssets(branchId?: string) {
   const [assets, setAssets] = useState<Asset[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -62,7 +60,7 @@ export function useAssets(branchId: string) {
     setLoading(true);
     setError(null);
     try {
-      const data = await getAssets(branchId);
+      const data = await getAssets();
       setAssets(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch assets');
@@ -72,16 +70,14 @@ export function useAssets(branchId: string) {
   }, [branchId]);
 
   useEffect(() => {
-    if (branchId) {
-      fetchAssets();
-    }
-  }, [branchId, fetchAssets]);
+    fetchAssets();
+  }, [fetchAssets]);
 
   return { assets, loading, error, refetch: fetchAssets };
 }
 
 // useWarehouses Hook
-export function useWarehouses(branchId: string) {
+export function useWarehouses(branchId?: string) {
   const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -90,7 +86,7 @@ export function useWarehouses(branchId: string) {
     setLoading(true);
     setError(null);
     try {
-      const data = await getWarehouses(branchId);
+      const data = await getWarehouses();
       setWarehouses(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch warehouses');
@@ -100,16 +96,16 @@ export function useWarehouses(branchId: string) {
   }, [branchId]);
 
   useEffect(() => {
-    if (branchId) {
-      fetchWarehouses();
-    }
-  }, [branchId, fetchWarehouses]);
+    
+    fetchWarehouses();
+    
+  }, [fetchWarehouses]);
 
   return { warehouses, loading, error, refetch: fetchWarehouses };
 }
 
 // useWarehouseLocations Hook
-export function useWarehouseLocations(warehouseId: string) {
+export function useWarehouseLocations(warehouseId?: string) {
   const [locations, setLocations] = useState<WarehouseLocation[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -128,10 +124,9 @@ export function useWarehouseLocations(warehouseId: string) {
   }, [warehouseId]);
 
   useEffect(() => {
-    if (warehouseId) {
-      fetchLocations();
-    }
-  }, [warehouseId, fetchLocations]);
+    fetchLocations();
+    
+  }, [fetchLocations]);
 
   return { locations, loading, error, refetch: fetchLocations };
 }
@@ -163,7 +158,7 @@ export function useStock(warehouseId?: string) {
 }
 
 // usePurchases Hook
-export function usePurchases(branchId: string) {
+export function usePurchases(branchId?: string) {
   const [purchases, setPurchases] = useState<Purchase[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -172,7 +167,7 @@ export function usePurchases(branchId: string) {
     setLoading(true);
     setError(null);
     try {
-      const data = await getPurchases(branchId);
+      const data = await getPurchases();
       setPurchases(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch purchases');
@@ -182,10 +177,9 @@ export function usePurchases(branchId: string) {
   }, [branchId]);
 
   useEffect(() => {
-    if (branchId) {
-      fetchPurchases();
-    }
-  }, [branchId, fetchPurchases]);
+    fetchPurchases();
+    
+  }, [fetchPurchases]);
 
   return { purchases, loading, error, refetch: fetchPurchases };
 }
@@ -219,7 +213,7 @@ export function usePurchaseItems(purchaseId: string) {
 }
 
 // useMovements Hook
-export function useMovements(branchId: string) {
+export function useMovements(branchId?: string) {
   const [movements, setMovements] = useState<Movement[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -228,7 +222,7 @@ export function useMovements(branchId: string) {
     setLoading(true);
     setError(null);
     try {
-      const data = await getMovements(branchId);
+      const data = await getMovements();
       setMovements(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch movements');
@@ -238,10 +232,8 @@ export function useMovements(branchId: string) {
   }, [branchId]);
 
   useEffect(() => {
-    if (branchId) {
-      fetchMovements();
-    }
-  }, [branchId, fetchMovements]);
+    fetchMovements(); 
+  }, [fetchMovements]);
 
   return { movements, loading, error, refetch: fetchMovements };
 }
@@ -272,4 +264,52 @@ export function useMovementItems(movementId: string) {
   }, [movementId, fetchItems]);
 
   return { items, loading, error, refetch: fetchItems };
+}
+export function useInventoryData() {
+  const productsState = useProducts('');
+  const assetsState = useAssets('');
+  const warehousesState = useWarehouses('');
+  const locationsState = useWarehouseLocations('');
+  const stockState = useStock();
+  const purchasesState = usePurchases('');
+  const movementsState = useMovements('');
+
+  const loading =
+    productsState.loading ||
+    assetsState.loading ||
+    warehousesState.loading ||
+    locationsState.loading ||
+    stockState.loading ||
+    purchasesState.loading ||
+    movementsState.loading;
+
+  const error =
+    productsState.error ||
+    assetsState.error ||
+    warehousesState.error ||
+    locationsState.error ||
+    stockState.error ||
+    purchasesState.error ||
+    movementsState.error;
+
+  return {
+    products: productsState.products,
+    assets: assetsState.assets,
+    warehouses: warehousesState.warehouses,
+    warehouseLocations: locationsState.locations,
+    stock: stockState.stock,
+    purchases: purchasesState.purchases,
+    movements: movementsState.movements,
+
+    loading,
+    error,
+
+    refetchProducts: productsState.refetch,
+    refetchAssets: assetsState.refetch,
+    refetchWarehouses: warehousesState.refetch,
+    refetchLocations: locationsState.refetch,
+    refetchStock: stockState.refetch,
+    refetchPurchases: purchasesState.refetch,
+    refetchMovements: movementsState.refetch,
+  };
 }
