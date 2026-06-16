@@ -2,18 +2,27 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { DataTable } from '@/components/ui/data-table';
 import { FormModal } from '@/components/ui/form-modal';
 import { Loader2, Plus, Search } from 'lucide-react';
 import { useInventoryData } from '@/hooks/useInventoryData';
+import { useI18n } from '@/components/i18n/LanguageProvider';
 
 export default function ProductsPage() {
+  const { t } = useI18n();
+
   const { products, loading, error, refetchProducts } = useInventoryData();
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
 
   const filteredProducts = products.filter(
     (product) =>
@@ -21,39 +30,39 @@ export default function ProductsPage() {
       product.sku?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleCreateProduct = async (formData) => {
+  const handleCreateProduct = async (formData: any) => {
     // TODO: Implement actual product creation with Supabase
     console.log('Creating product:', formData);
     setIsModalOpen(false);
     refetchProducts();
   };
 
-  const handleUpdateProduct = async (formData) => {
+  const handleUpdateProduct = async (formData: any) => {
     // TODO: Implement actual product update with Supabase
     console.log('Updating product:', formData);
     setIsModalOpen(false);
     refetchProducts();
   };
 
-  const handleDeleteProduct = async (id) => {
+  const handleDeleteProduct = async (id: string) => {
     // TODO: Implement actual product deletion with Supabase
-    if (confirm('Are you sure you want to delete this product?')) {
+    if (confirm(t('common.confirmDelete'))) {
       console.log('Deleting product:', id);
       refetchProducts();
     }
   };
 
   const columns = [
-    { accessorKey: 'sku', header: 'SKU' },
-    { accessorKey: 'name', header: 'Product Name' },
-    { accessorKey: 'category', header: 'Category' },
-    { accessorKey: 'brand', header: 'Brand' },
-    { accessorKey: 'unit', header: 'Unit' },
-    { accessorKey: 'unit_price', header: 'Unit Price' },
+    { accessorKey: 'sku', header: t('fields.sku') },
+    { accessorKey: 'name', header: t('fields.productName') },
+    { accessorKey: 'category', header: t('fields.category') },
+    { accessorKey: 'brand', header: t('fields.brand') },
+    { accessorKey: 'unit', header: t('fields.unit') },
+    { accessorKey: 'unit_price', header: t('fields.unitPrice') },
     {
       id: 'actions',
-      header: 'Actions',
-      cell: ({ row }) => (
+      header: t('common.actions'),
+      cell: ({ row }: { row: { original: any } }) => (
         <div className="flex gap-2">
           <Button
             size="sm"
@@ -63,14 +72,15 @@ export default function ProductsPage() {
               setIsModalOpen(true);
             }}
           >
-            Edit
+            {t('common.edit')}
           </Button>
+
           <Button
             size="sm"
             variant="destructive"
             onClick={() => handleDeleteProduct(row.original.id)}
           >
-            Delete
+            {t('common.delete')}
           </Button>
         </div>
       ),
@@ -78,44 +88,56 @@ export default function ProductsPage() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Products</h1>
-          <p className="text-muted-foreground">Manage your product catalog</p>
+          <h1 className="text-3xl font-bold tracking-tight">
+            {t('inventory.productsTitle')}
+          </h1>
+          <p className="text-muted-foreground">
+            {t('inventory.productsSubtitle')}
+          </p>
         </div>
-        <Button onClick={() => {
-          setSelectedProduct(null);
-          setIsModalOpen(true);
-        }}>
+
+        <Button
+          onClick={() => {
+            setSelectedProduct(null);
+            setIsModalOpen(true);
+          }}
+        >
           <Plus className="mr-2 h-4 w-4" />
-          New Product
+          {t('inventory.newProduct')}
         </Button>
       </div>
 
       {error && (
         <Card className="border-destructive">
           <CardContent className="pt-6">
-            <p className="text-destructive">Error loading products: {error}</p>
+            <p className="text-destructive">
+              {t('errors.loadingProducts')}: {error}
+            </p>
           </CardContent>
         </Card>
       )}
 
       <Card>
         <CardHeader>
-          <CardTitle>Product Catalog</CardTitle>
-          <CardDescription>View and manage all products</CardDescription>
+          <CardTitle>{t('inventory.productCatalog')}</CardTitle>
+          <CardDescription>
+            {t('inventory.productCatalogDescription')}
+          </CardDescription>
         </CardHeader>
+
         <CardContent>
           <div className="space-y-4">
             <div className="flex gap-2">
               <Input
-                placeholder="Search by name or SKU..."
+                placeholder={t('inventory.searchProduct')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="max-w-sm"
               />
-              <Search className="text-muted-foreground h-4 w-4" />
+              <Search className="text-muted-foreground h-4 w-4 mt-3" />
             </div>
 
             {loading ? (
@@ -132,15 +154,19 @@ export default function ProductsPage() {
       <FormModal
         open={isModalOpen}
         onOpenChange={setIsModalOpen}
-        title={selectedProduct ? 'Edit Product' : 'Create Product'}
+        title={
+          selectedProduct
+            ? t('inventory.editProduct')
+            : t('inventory.createProduct')
+        }
         onSubmit={selectedProduct ? handleUpdateProduct : handleCreateProduct}
         fields={[
-          { name: 'sku', label: 'SKU', required: true },
-          { name: 'name', label: 'Product Name', required: true },
-          { name: 'category', label: 'Category' },
-          { name: 'brand', label: 'Brand' },
-          { name: 'unit', label: 'Unit' },
-          { name: 'unit_price', label: 'Unit Price', type: 'number' },
+          { name: 'sku', label: t('fields.sku'), required: true },
+          { name: 'name', label: t('fields.productName'), required: true },
+          { name: 'category', label: t('fields.category') },
+          { name: 'brand', label: t('fields.brand') },
+          { name: 'unit', label: t('fields.unit') },
+          { name: 'unit_price', label: t('fields.unitPrice'), type: 'number' },
         ]}
         defaultValues={selectedProduct}
       />

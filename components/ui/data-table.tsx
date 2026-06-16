@@ -12,6 +12,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ChevronUp, ChevronDown } from 'lucide-react';
+import { useI18n } from '@/components/i18n/LanguageProvider';
 
 type DataTableColumn<T> = {
   id?: string;
@@ -27,7 +28,7 @@ interface DataTableProps<T> {
   data: T[];
   columns: DataTableColumn<T>[];
   loading?: boolean;
-  searchKey?: keyof T;
+  searchKey?: Extract<keyof T, string> | string;
   onEdit?: (row: T) => void;
   onDelete?: (row: T) => void;
   actions?: (row: T) => React.ReactNode;
@@ -65,9 +66,11 @@ export function DataTable<T extends Record<string, any>>({
   onDelete,
   actions,
 }: DataTableProps<T>) {
+  const { t } = useI18n();
+
   const [search, setSearch] = useState('');
   const [sortConfig, setSortConfig] = useState<{
-    key: keyof T | string;
+    key: string;
     direction: 'asc' | 'desc';
   } | null>(null);
 
@@ -103,7 +106,7 @@ export function DataTable<T extends Record<string, any>>({
   }, [filteredData, sortConfig]);
 
   const handleSort = (column: DataTableColumn<T>, index: number) => {
-    const key = column.accessorKey ?? column.id ?? `column-${index}`;
+    const key = String(column.accessorKey ?? column.id ?? `column-${index}`);
 
     setSortConfig((prev) => {
       if (prev?.key === key) {
@@ -122,7 +125,7 @@ export function DataTable<T extends Record<string, any>>({
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4" />
-          <p className="text-gray-600">Loading...</p>
+          <p className="text-gray-600">{t('common.loading')}</p>
         </div>
       </div>
     );
@@ -134,7 +137,7 @@ export function DataTable<T extends Record<string, any>>({
     <div className="space-y-4">
       {searchKey && (
         <Input
-          placeholder="Search..."
+          placeholder={t('common.search')}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="max-w-sm"
@@ -170,7 +173,11 @@ export function DataTable<T extends Record<string, any>>({
                 );
               })}
 
-              {hasActionsColumn && <TableHead key="table-actions">Actions</TableHead>}
+              {hasActionsColumn && (
+                <TableHead key="table-actions">
+                  {t('common.actions')}
+                </TableHead>
+              )}
             </TableRow>
           </TableHeader>
 
@@ -181,7 +188,7 @@ export function DataTable<T extends Record<string, any>>({
                   colSpan={columns.length + (hasActionsColumn ? 1 : 0)}
                   className="text-center py-8 text-gray-500"
                 >
-                  No data found
+                  {t('common.noData')}
                 </TableCell>
               </TableRow>
             ) : (
@@ -218,7 +225,7 @@ export function DataTable<T extends Record<string, any>>({
                               variant="outline"
                               onClick={() => onEdit(row)}
                             >
-                              Edit
+                              {t('common.edit')}
                             </Button>
                           )}
 
@@ -229,7 +236,7 @@ export function DataTable<T extends Record<string, any>>({
                               className="text-red-600 hover:text-red-700"
                               onClick={() => onDelete(row)}
                             >
-                              Delete
+                              {t('common.delete')}
                             </Button>
                           )}
                         </div>

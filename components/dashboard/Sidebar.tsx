@@ -13,9 +13,10 @@ import {
   ArrowRightLeft,
   Lock,
 } from 'lucide-react';
+import { useI18n } from '@/components/i18n/LanguageProvider';
 
 interface NavItem {
-  label: string;
+  labelKey: string;
   href: string;
   icon: React.ReactNode;
   disabled?: boolean;
@@ -23,37 +24,37 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   {
-    label: 'Inventory Dashboard',
+    labelKey: 'nav.inventory',
     href: '/dashboard/inventory',
     icon: <LayoutDashboard className="w-5 h-5" />,
   },
   {
-    label: 'Products',
+    labelKey: 'nav.products',
     href: '/dashboard/products',
     icon: <Package className="w-5 h-5" />,
   },
   {
-    label: 'Assets',
+    labelKey: 'nav.assets',
     href: '/dashboard/assets',
     icon: <Boxes className="w-5 h-5" />,
   },
   {
-    label: 'Warehouses',
+    labelKey: 'nav.warehouses',
     href: '/dashboard/warehouses',
     icon: <Warehouse className="w-5 h-5" />,
   },
   {
-    label: 'Current Stock',
+    labelKey: 'nav.stock',
     href: '/dashboard/stock',
     icon: <TrendingUp className="w-5 h-5" />,
   },
   {
-    label: 'Purchases',
+    labelKey: 'nav.purchases',
     href: '/dashboard/purchases',
     icon: <ShoppingCart className="w-5 h-5" />,
   },
   {
-    label: 'Movements',
+    labelKey: 'nav.movements',
     href: '/dashboard/movements',
     icon: <ArrowRightLeft className="w-5 h-5" />,
   },
@@ -61,13 +62,13 @@ const navItems: NavItem[] = [
 
 const comingSoonItems: NavItem[] = [
   {
-    label: 'WISP/ISP',
+    labelKey: 'nav.wisp',
     href: '#',
     icon: <Lock className="w-5 h-5" />,
     disabled: true,
   },
   {
-    label: 'SNMP Monitoring',
+    labelKey: 'nav.monitoring',
     href: '#',
     icon: <Lock className="w-5 h-5" />,
     disabled: true,
@@ -76,18 +77,22 @@ const comingSoonItems: NavItem[] = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { t } = useI18n();
 
   return (
     <aside className="w-64 bg-slate-900 text-white h-screen overflow-y-auto flex flex-col">
       <div className="p-6 border-b border-slate-800">
-        <h1 className="text-2xl font-bold">Inventory</h1>
-        <p className="text-slate-400 text-sm mt-1">Management System</p>
+        <h1 className="text-2xl font-bold">{t('nav.inventory')}</h1>
+        <p className="text-slate-400 text-sm mt-1">
+          {t('common.managementSystem')}
+        </p>
       </div>
 
       <nav className="flex-1 p-4 space-y-2">
         <div className="text-xs uppercase text-slate-400 font-semibold px-3 py-2 mb-4">
-          Main
+          {t('common.main')}
         </div>
+
         {navItems.map((item) => (
           <Link
             key={item.href}
@@ -99,20 +104,21 @@ export function Sidebar() {
             }`}
           >
             {item.icon}
-            <span className="text-sm font-medium">{item.label}</span>
+            <span className="text-sm font-medium">{t(item.labelKey)}</span>
           </Link>
         ))}
 
         <div className="text-xs uppercase text-slate-400 font-semibold px-3 py-2 mt-8 mb-4">
-          Coming Soon
+          {t('common.comingSoon')}
         </div>
+
         {comingSoonItems.map((item) => (
           <div
-            key={item.label}
+            key={item.labelKey}
             className="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-500 cursor-not-allowed opacity-50"
           >
             {item.icon}
-            <span className="text-sm font-medium">{item.label}</span>
+            <span className="text-sm font-medium">{t(item.labelKey)}</span>
           </div>
         ))}
       </nav>

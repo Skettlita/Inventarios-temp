@@ -5,8 +5,11 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
+import { useI18n } from '@/components/i18n/LanguageProvider';
 
 export function LoginForm() {
+  const { t } = useI18n();
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -23,18 +26,21 @@ export function LoginForm() {
         email,
         password,
       });
+
       if (error) {
         setError(error.message);
         return;
       }
+
       if (!data.session) {
-        setError('Login failed. No session was created.');
+        setError(t('auth.loginFailed'));
         return;
       }
+
       router.replace('/dashboard');
       router.refresh();
     } catch (err) {
-      setError('An error occurred. Please try again.');
+      setError(t('auth.genericLoginError'));
     } finally {
       setLoading(false);
     }
@@ -44,7 +50,7 @@ export function LoginForm() {
     <form onSubmit={handleLogin} className="space-y-4 w-full max-w-md">
       <div>
         <label htmlFor="email" className="block text-sm font-medium mb-1 text-gray-700">
-          Email
+          {t('auth.email')}
         </label>
         <input
           id="email"
@@ -59,7 +65,7 @@ export function LoginForm() {
 
       <div>
         <label htmlFor="password" className="block text-sm font-medium mb-1 text-gray-700">
-          Password
+          {t('auth.password')}
         </label>
         <input
           id="password"
@@ -75,7 +81,7 @@ export function LoginForm() {
       {error && <div className="text-red-600 text-sm">{error}</div>}
 
       <Button type="submit" disabled={loading} className="w-full">
-        {loading ? 'Signing in...' : 'Sign In'}
+        {loading ? t('auth.signingIn') : t('auth.signIn')}
       </Button>
     </form>
   );

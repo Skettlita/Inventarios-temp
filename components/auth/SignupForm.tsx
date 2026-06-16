@@ -1,3 +1,4 @@
+//SignupForm.tsx
 'use client';
 
 import React, { useState } from 'react';
@@ -5,9 +6,11 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
+import { useI18n } from '@/components/i18n/LanguageProvider';
 
 export function SignupForm() {
   const router = useRouter();
+  const { t } = useI18n();
 
   const [fullName, setFullName] = useState('');
   const [companyName, setCompanyName] = useState('');
@@ -24,12 +27,12 @@ export function SignupForm() {
     setSuccessMessage('');
 
     if (password.length < 6) {
-      setError('Password must be at least 6 characters long.');
+      setError(t('auth.passwordMin'));
       return;
     }
 
     if (password !== confirmPassword) {
-      setError('Passwords do not match.');
+      setError(t('auth.passwordsDontMatch'));
       return;
     }
 
@@ -58,11 +61,9 @@ export function SignupForm() {
         return;
       }
 
-      setSuccessMessage(
-        'Account created. Please check your email to confirm your account before signing in.'
-      );
+      setSuccessMessage(t('auth.accountCreated'));
     } catch (err) {
-      setError('An error occurred while creating the account. Please try again.');
+      setError(t('auth.genericSignupError'));
     } finally {
       setLoading(false);
     }
@@ -72,7 +73,7 @@ export function SignupForm() {
     <form onSubmit={handleSignup} className="space-y-4 w-full max-w-md">
       <div>
         <label htmlFor="fullName" className="block text-sm font-medium mb-1 text-gray-700">
-          Full name
+          {t('auth.fullName')}
         </label>
         <input
           id="fullName"
@@ -87,7 +88,7 @@ export function SignupForm() {
 
       <div>
         <label htmlFor="companyName" className="block text-sm font-medium mb-1 text-gray-700">
-          Company name
+          {t('auth.companyName')}
         </label>
         <input
           id="companyName"
@@ -102,7 +103,7 @@ export function SignupForm() {
 
       <div>
         <label htmlFor="email" className="block text-sm font-medium mb-1 text-gray-700">
-          Email
+          {t('auth.email')}
         </label>
         <input
           id="email"
@@ -117,7 +118,7 @@ export function SignupForm() {
 
       <div>
         <label htmlFor="password" className="block text-sm font-medium mb-1 text-gray-700">
-          Password
+          {t('auth.password')}
         </label>
         <input
           id="password"
@@ -132,7 +133,7 @@ export function SignupForm() {
 
       <div>
         <label htmlFor="confirmPassword" className="block text-sm font-medium mb-1 text-gray-700">
-          Confirm password
+          {t('auth.confirmPassword')}
         </label>
         <input
           id="confirmPassword"
@@ -149,13 +150,13 @@ export function SignupForm() {
       {successMessage && <div className="text-green-700 text-sm">{successMessage}</div>}
 
       <Button type="submit" disabled={loading} className="w-full">
-        {loading ? 'Creating account...' : 'Create account'}
+        {loading ? t('auth.creatingAccount') : t('auth.createAccount')}
       </Button>
 
       <div className="text-center text-sm text-gray-600">
-        Already have an account?{' '}
+        {t('auth.alreadyHaveAccount')}{' '}
         <Link href="/login" className="text-blue-600 hover:underline font-medium">
-          Sign in
+          {t('auth.signInLink')}
         </Link>
       </div>
     </form>

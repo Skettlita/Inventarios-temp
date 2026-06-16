@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { AuthProvider } from '@/components/auth/AuthProvider';
+import { LanguageProvider } from '@/components/i18n/LanguageProvider';
 
 export const metadata: Metadata = {
   title: 'Inventory Management System',
@@ -20,7 +21,9 @@ export default function RootLayout({
   return (
     <html lang="en" className="bg-background">
       <body>
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>
+          <LanguageProvider>{children}</LanguageProvider>
+        </AuthProvider>
       </body>
     </html>
   );
