@@ -51,12 +51,7 @@ function normalizeStock(row: any): Stock {
 export async function getProducts() {
   const { data, error } = await inventory()
     .from('products')
-    .select(`
-      *,
-      categories:category_id(name),
-      brands:brand_id(name),
-      units:unit_id(name, symbol)
-    `)
+    .select('*')
     .order('created_at', { ascending: false });
 
   if (error) throw error;
@@ -66,12 +61,7 @@ export async function getProducts() {
 export async function getProductById(productId: string) {
   const { data, error } = await inventory()
     .from('products')
-    .select(`
-      *,
-      categories:category_id(name),
-      brands:brand_id(name),
-      units:unit_id(name, symbol)
-    `)
+    .select('*')
     .eq('id', productId)
     .single();
 
@@ -135,12 +125,7 @@ export async function deleteProduct(productId: string) {
 export async function getAssets() {
   const { data, error } = await inventory()
     .from('assets')
-    .select(`
-      *,
-      products:product_id(name, sku),
-      warehouses:warehouse_id(name),
-      warehouse_locations:location_id(name)
-    `)
+    .select('*')
     .order('created_at', { ascending: false });
 
   if (error) throw error;
@@ -150,12 +135,7 @@ export async function getAssets() {
 export async function getAssetById(assetId: string) {
   const { data, error } = await inventory()
     .from('assets')
-    .select(`
-      *,
-      products:product_id(name, sku),
-      warehouses:warehouse_id(name),
-      warehouse_locations:location_id(name)
-    `)
+    .select('*')
     .eq('id', assetId)
     .single();
 
@@ -305,12 +285,7 @@ export async function deleteWarehouseLocation(locationId: string) {
 export async function getStock(warehouseId?: string) {
   let query = inventory()
     .from('stock')
-    .select(`
-      *,
-      products:product_id(name, sku, min_stock),
-      warehouses:warehouse_id(name),
-      warehouse_locations:location_id(name)
-    `);
+    .select('*')
 
   if (warehouseId) {
     query = query.eq('warehouse_id', warehouseId);
@@ -324,12 +299,7 @@ export async function getStock(warehouseId?: string) {
 export async function getStockByProduct(productId: string) {
   const { data, error } = await inventory()
     .from('stock')
-    .select(`
-      *,
-      products:product_id(name, sku, min_stock),
-      warehouses:warehouse_id(name),
-      warehouse_locations:location_id(name)
-    `)
+    .select('*')
     .eq('product_id', productId);
 
   if (error) throw error;
@@ -359,11 +329,7 @@ export async function updateStock(stockId: string, updates: Partial<Stock>) {
 export async function getPurchases(branchId?: string) {
   let query = inventory()
     .from('purchases')
-    .select(`
-      *,
-      suppliers:supplier_id(name),
-      branches:branch_id(name)
-    `)
+    .select('*')
     .order('created_at', { ascending: false });
 
   if (branchId) {
@@ -378,11 +344,7 @@ export async function getPurchases(branchId?: string) {
 export async function getPurchaseById(purchaseId: string) {
   const { data, error } = await inventory()
     .from('purchases')
-    .select(`
-      *,
-      suppliers:supplier_id(name),
-      branches:branch_id(name)
-    `)
+    .select('*')
     .eq('id', purchaseId)
     .single();
 
@@ -422,10 +384,7 @@ export async function deletePurchase(purchaseId: string) {
 export async function getPurchaseItems(purchaseId: string) {
   const { data, error } = await inventory()
     .from('purchase_items')
-    .select(`
-      *,
-      products:product_id(name, sku)
-    `)
+    .select('*')
     .eq('purchase_id', purchaseId)
     .order('created_at', { ascending: false });
 
@@ -465,11 +424,7 @@ export async function deletePurchaseItem(itemId: string) {
 export async function getMovements(branchId?: string) {
   let query = inventory()
     .from('movements')
-    .select(`
-      *,
-      warehouses_from:warehouse_from_id(name),
-      warehouses_to:warehouse_to_id(name)
-    `)
+    .select('*')
     .order('created_at', { ascending: false });
 
   if (branchId) {
@@ -484,11 +439,7 @@ export async function getMovements(branchId?: string) {
 export async function getMovementById(movementId: string) {
   const { data, error } = await inventory()
     .from('movements')
-    .select(`
-      *,
-      warehouses_from:warehouse_from_id(name),
-      warehouses_to:warehouse_to_id(name)
-    `)
+    .select('*')
     .eq('id', movementId)
     .single();
 
@@ -528,10 +479,7 @@ export async function deleteMovement(movementId: string) {
 export async function getMovementItems(movementId: string) {
   const { data, error } = await inventory()
     .from('movement_items')
-    .select(`
-      *,
-      products:product_id(name, sku)
-    `)
+    .select('*')
     .eq('movement_id', movementId);
 
   if (error) throw error;

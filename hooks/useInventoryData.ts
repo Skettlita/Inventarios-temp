@@ -1,29 +1,24 @@
 'use client';
 import { useState, useCallback, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
-import {
-  getProducts,
-  getAssets,
-  getWarehouses,
-  getWarehouseLocations,
-  getStock,
-  getPurchases,
-  getMovements,
-  getPurchaseItems,
-  getMovementItems,
-} from '@/lib/db-queries';
-import type {
-  Product,
-  Asset,
-  Warehouse,
-  WarehouseLocation,
-  Stock,
-  Purchase,
-  Movement,
-  PurchaseItem,
-  MovementItem,
-} from '@/types/database';
+import {getProducts,getAssets,getWarehouses,getWarehouseLocations,getStock,getPurchases,getMovements,getPurchaseItems,getMovementItems,} from '@/lib/db-queries';
+import type {Product,Asset,Warehouse,WarehouseLocation,Stock,Purchase,Movement,PurchaseItem,MovementItem,} from '@/types/database';
 
+function getErrorMessage(err: unknown, fallback: string) {
+  if (err instanceof Error) {
+    return err.message;
+  }
+
+  if (typeof err === 'object' && err !== null && 'message' in err) {
+    return String((err as { message?: unknown }).message);
+  }
+
+  if (typeof err === 'object' && err !== null) {
+    return JSON.stringify(err);
+  }
+
+  return fallback;
+}
 // useProducts Hook
 export function useProducts(branchId?: string) {
   const [products, setProducts] = useState<Product[]>([]);
@@ -37,7 +32,7 @@ export function useProducts(branchId?: string) {
       const data = await getProducts();
       setProducts(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch products');
+      setError(getErrorMessage(err, 'Failed to fetch products'));
     } finally {
       setLoading(false);
     }
@@ -63,7 +58,7 @@ export function useAssets(branchId?: string) {
       const data = await getAssets();
       setAssets(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch assets');
+      setError(getErrorMessage(err, 'Failed to fetch assets'));
     } finally {
       setLoading(false);
     }
@@ -89,7 +84,7 @@ export function useWarehouses(branchId?: string) {
       const data = await getWarehouses();
       setWarehouses(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch warehouses');
+      setError(getErrorMessage(err, 'Failed to fetch warehouses'));
     } finally {
       setLoading(false);
     }
@@ -117,7 +112,7 @@ export function useWarehouseLocations(warehouseId?: string) {
       const data = await getWarehouseLocations(warehouseId);
       setLocations(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch locations');
+      setError(getErrorMessage(err, 'Failed to fetch locations'));
     } finally {
       setLoading(false);
     }
@@ -144,7 +139,7 @@ export function useStock(warehouseId?: string) {
       const data = await getStock(warehouseId);
       setStock(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch stock');
+      setError(getErrorMessage(err, 'Failed to fetch stock'));
     } finally {
       setLoading(false);
     }
@@ -170,7 +165,7 @@ export function usePurchases(branchId?: string) {
       const data = await getPurchases();
       setPurchases(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch purchases');
+      setError(getErrorMessage(err, 'Failed to fetch purchases'));
     } finally {
       setLoading(false);
     }
@@ -197,7 +192,7 @@ export function usePurchaseItems(purchaseId: string) {
       const data = await getPurchaseItems(purchaseId);
       setItems(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch purchase items');
+      setError(getErrorMessage(err, 'Failed to fetch purchase items'));
     } finally {
       setLoading(false);
     }
@@ -225,7 +220,7 @@ export function useMovements(branchId?: string) {
       const data = await getMovements();
       setMovements(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch movements');
+      setError(getErrorMessage(err, 'Failed to fetch movements'));
     } finally {
       setLoading(false);
     }
@@ -251,7 +246,7 @@ export function useMovementItems(movementId: string) {
       const data = await getMovementItems(movementId);
       setItems(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch movement items');
+      setError(getErrorMessage(err, 'Failed to fetchmovement items'));
     } finally {
       setLoading(false);
     }
