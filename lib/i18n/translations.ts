@@ -54,6 +54,8 @@ export const translations = {
       loginFailed: 'No se pudo iniciar sesión. No se creó una sesión.',
       genericLoginError: 'Ocurrió un error. Inténtalo nuevamente.',
       genericSignupError: 'Ocurrió un error al crear la cuenta. Inténtalo nuevamente.',
+      loginIdentifier: 'Usuario o correo electrónico',
+      loginIdentifierPlaceholder: 'Ej: admin@empresa o correo@dominio.com',
     },
 
     nav: {
@@ -291,6 +293,8 @@ export const translations = {
       loginFailed: 'Login failed. No session was created.',
       genericLoginError: 'An error occurred. Please try again.',
       genericSignupError: 'An error occurred while creating the account. Please try again.',
+      loginIdentifier: 'Username or email',
+      loginIdentifierPlaceholder: 'Example: admin@company or email@domain.com',
     },
 
     nav: {

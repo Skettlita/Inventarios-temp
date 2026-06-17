@@ -1,4 +1,3 @@
-//LoginForm.tsx
 'use client';
 
 import React, { useState } from 'react';
@@ -10,11 +9,29 @@ import { useI18n } from '@/components/i18n/LanguageProvider';
 export function LoginForm() {
   const { t } = useI18n();
 
-  const [email, setEmail] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
   const router = useRouter();
+
+  const resolveLoginEmail = async (loginIdentifier: string) => {
+    const cleanIdentifier = loginIdentifier.trim();
+
+    const { data, error } = await supabase
+      .schema('core')
+      .rpc('resolve_login_identifier', {
+        p_identifier: cleanIdentifier,
+      });
+
+    if (error) {
+      console.error('Error resolving login identifier:', error);
+      return cleanIdentifier;
+    }
+
+    return data || cleanIdentifier;
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,8 +39,10 @@ export function LoginForm() {
     setLoading(true);
 
     try {
+      const loginEmail = await resolveLoginEmail(identifier);
+
       const { data, error } = await supabase.auth.signInWithPassword({
-        email,
+        email: loginEmail,
         password,
       });
 
@@ -40,6 +59,7 @@ export function LoginForm() {
       router.replace('/dashboard');
       router.refresh();
     } catch (err) {
+      console.error('Login error:', err);
       setError(t('auth.genericLoginError'));
     } finally {
       setLoading(false);
@@ -49,24 +69,34 @@ export function LoginForm() {
   return (
     <form onSubmit={handleLogin} className="space-y-4 w-full max-w-md">
       <div>
-        <label htmlFor="email" className="block text-sm font-medium mb-1 text-gray-700">
-          {t('auth.email')}
+        <label
+          htmlFor="identifier"
+          className="block text-sm font-medium mb-1 text-gray-700"
+        >
+          {t('auth.loginIdentifier')}
         </label>
+
         <input
-          id="email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          id="identifier"
+          type="text"
+          value={identifier}
+          onChange={(e) => setIdentifier(e.target.value)}
+          placeholder={t('auth.loginIdentifierPlaceholder')}
           className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
           required
           disabled={loading}
+          autoComplete="username"
         />
       </div>
 
       <div>
-        <label htmlFor="password" className="block text-sm font-medium mb-1 text-gray-700">
+        <label
+          htmlFor="password"
+          className="block text-sm font-medium mb-1 text-gray-700"
+        >
           {t('auth.password')}
         </label>
+
         <input
           id="password"
           type="password"
@@ -75,6 +105,7 @@ export function LoginForm() {
           className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
           required
           disabled={loading}
+          autoComplete="current-password"
         />
       </div>
 
